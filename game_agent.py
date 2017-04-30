@@ -11,9 +11,7 @@ class SearchTimeout(Exception):
 
 
 def custom_score(game, player):
-    """Calculate the heuristic value of a game state from the point of view
-    of the given player.
-
+    """Calculate the difference between number of legal moves for the two players.
     This should be the best heuristic function for your project submission.
 
     Note: this function should be called from within a Player instance as
@@ -34,8 +32,17 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-int")
+    if game.is_winder(player):
+        return float("int")
+
+    self_moves = game.get_legal_moves(player)
+    oppo_moves = game.get_legal_moves(game.get_opponents(player))
+
+    diff_moves = len(self_moves) - len(oppo_moves)
+    return diff_moves
+
 
 
 def custom_score_2(game, player):
@@ -212,9 +219,40 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
+        best_move = None
         # TODO: finish this function!
-        raise NotImplementedError
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return (-1, -1)
 
+        if depth == 0:
+            return (-1,-1)
+
+        if game.active_player() == self:
+
+            score = float("-inf")
+            for move in legal_moves:
+                next_state = game.forecast(move)
+                score = self.minimax(next_state, depth-1)
+                game._active_player = game.get_opponents(self)
+                if score > best_score:
+                    best_score = score
+                    best_move = move
+        else:
+            best_score = float("inf")
+            for move in legal_moves:
+                next_state = game.forecast(move)
+                score = self.minimax(next_state, depth-1)
+                game._active_player = self
+                if score < best_score:
+                    best_score = score
+                    best_move = move
+
+        return best_move
+
+
+
+ 
 
 class AlphaBetaPlayer(IsolationPlayer):
     """Game-playing agent that chooses a move using iterative deepening minimax
@@ -254,8 +292,20 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        # Initialize the best move so that this function returns something
+        # in case the search fails due to timeout
+        best_move = (-1, -1)
+
+        try:
+            # The try/except block will automatically catch the exception
+            # raised when the timer is about to expire.
+            return self.alphabeta(game, self.search_depth, alpha=float("-inf"), beta=float("inf"))
+
+        except SearchTimeout:
+            pass  # Handle any actions required after timeout as needed
+
+        # Return the best move from the last completed search iteration
+        return best_move
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
@@ -305,5 +355,48 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+
+
+
+        legal_moves = game.get_legal_moves()
+        if not legal_moves:
+            return (-1, -1)
+        if depth == 0:
+            return self.score()
+
+        best_move = None
+
+
+
+        if game.active_player == self:
+
+            best_score = float("-inf")
+
+            for move in legal_moves:
+                next_state = game.forecast(move)
+                score = self.alphabeta(next_state, depth-1, alpha, beta)
+                game._active_player = game.get_opponents(self)
+                if score > best_score:
+                    best_move = move
+                    best_score = score
+                if best_score >= beta:
+                    return best_score
+            alpha = max(alpha, best_score)
+
+
+        else:
+
+            best_score = float("inf")
+
+            for move in legal_moves:
+                next_state = game.forecast(move)
+                score = self.alphabeta(next_state, depth-1, alpha, beta)
+                game._active_player = self
+                if score < best_score:
+                    best_move = move
+                    best_score = score
+                if best_score <= alpha:
+                    return best_score
+            beta = min(beta, best_score)
+
+        return best_move
