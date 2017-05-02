@@ -208,17 +208,15 @@ class CounterBoard(isolation.Board):
 
 class MinimaxTest(unittest.TestCase):
 
-    def initAUT(self, depth, score_fn, time_left):
+    def initAUT(self, depth, score_fn, time_left, loc1=(3, 3),loc2=(0, 0)):
         """Generate and initialize player and board objects to be used for
         testing.
         """
-        self.depth = 1
-        loc1=(3, 3)
-        loc2=(0, 0)
+
         w = 7
         h = 7
         reload(game_agent)
-        agentUT = game_agent.MinimaxPlayer(self.depth, self.score_fn)
+        agentUT = game_agent.MinimaxPlayer(depth, score_fn)
         board = CounterBoard(agentUT, 'null_agent', w, h)
         board.apply_move(loc1)
         board.apply_move(loc2)
