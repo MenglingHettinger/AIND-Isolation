@@ -1,0 +1,12 @@
+{
+    "critiques": {
+        "680": {
+            "rubric_items": {
+                "5510": {
+                    "result": "failed",
+                    "observation": "{\n    \"14. Submission includes heuristic_analysis.pdf\": {\n        \"traceback\": \"AssertionError: False is not true : You must submit a report named heuristic_analysis.pdf for review.\\n\"\n    }, \n    \"10. Test that AlphaBetaPlayer successfully plays a full game\": {\n        \"traceback\": \"Traceback (most recent call last):\\nRuntimeError: Agent get_moves() killed -- no response for 2 seconds\\n\\nDuring handling of the above exception, another exception occurred:\\n\\nAssertionError: Your agent raised an error while attempting to play a complete game against another agent.  Make sure that your agent can play an entire game -- including selecting initial moves on an empty board.\\nException: Agent get_moves() killed -- no response for 2 seconds\\n\"\n    }\n}"
+                }
+            }
+        }
+    }
+}
